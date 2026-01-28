@@ -22,16 +22,15 @@ quick-sharun \
 # they are also very delicate and get broken by strip
 kek=.$(tr -dc 'A-Za-z0-9_=-' < /dev/urandom | head -c 10)
 rm -f ./AppDir/bin/opencode-cli         ./AppDir/shared/bin/opencode-cli
-cp -v /usr/bin/opencode-cli             ./AppDir/bin/opencode-cli.wrapped
-patchelf --set-interpreter /tmp/"$kek"  ./AppDir/bin/opencode-cli.wrapped
-patchelf --set-rpath '$ORIGIN/../lib'   ./AppDir/bin/opencode-cli.wrapped
+cp -v /usr/bin/opencode-cli             ./AppDir/bin/opencode-cli
+patchelf --set-interpreter /tmp/"$kek"  ./AppDir/bin/opencode-cli
+patchelf --set-rpath '$ORIGIN/../lib'   ./AppDir/bin/opencode-cli
 
-cat <<EOF > ./AppDir/bin/opencode-cli
+cat <<EOF > ./AppDir/bin/random-linker.src.hook
 #!/bin/sh
 cp -f "\$APPDIR"/shared/lib/ld-linux*.so* /tmp/"$kek"
-exec "\$APPDIR"/bin/opencode-cli.wrapped "\$@"
 EOF
-chmod +x ./AppDir/bin/opencode-cli*
+chmod +x ./AppDir/bin/*.hook
 
 # Turn AppDir into AppImage
 quick-sharun --make-appimage
