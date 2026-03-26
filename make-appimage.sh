@@ -4,7 +4,6 @@ ARCH=$(uname -m)
 VERSION=$(pacman -Q opencode-bin | awk '{print $2; exit}')  # 改包名
 export ARCH VERSION
 export OUTPATH=./dist
-export ADD_HOOKS="self-updater.bg.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
 
 # opencode-bin 是纯 CLI，没有图标和桌面文件，需要手动创建
