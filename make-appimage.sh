@@ -7,7 +7,7 @@ export OUTPATH=./dist
 export ADD_HOOKS="self-updater.bg.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
 
-# 创建桌面文件和图标目录
+# openspec 是 CLI 工具，没有图标和桌面文件，手动创建
 mkdir -p ./AppDir/usr/share/icons/hicolor/128x128/apps
 mkdir -p ./AppDir/usr/share/applications
 
@@ -20,7 +20,7 @@ export ICON=./AppDir/usr/share/icons/hicolor/128x128/apps/openspec.png
 cat <<EOF > ./AppDir/usr/share/applications/openspec.desktop
 [Desktop Entry]
 Name=OpenSpec
-Exec=openspec
+Exec=openspec-standalone
 Icon=openspec
 Type=Application
 Categories=Development;
