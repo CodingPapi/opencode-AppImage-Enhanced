@@ -21,6 +21,7 @@ Exec=opencode
 Icon=opencode
 Type=Application
 Categories=Development;
+StartupWMClass=opencode
 EOF
 
 # 用一个占位图标（如果有真实图标路径就替换）
