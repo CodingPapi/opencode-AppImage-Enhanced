@@ -35,6 +35,7 @@ quick-sharun \
     /usr/bin/node
 
 # 把 openspec 的 lib 目录（包含 node_modules）复制进 AppDir
+mkdir -p ./AppDir/usr/lib
 cp -r /usr/lib/openspec ./AppDir/usr/lib/openspec
 
 # Turn AppDir into AppImage
