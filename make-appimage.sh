@@ -11,13 +11,9 @@ export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}
 mkdir -p ./AppDir/usr/share/icons/hicolor/128x128/apps
 mkdir -p ./AppDir/usr/share/applications
 
-# 尝试下载官方图标，失败则生成占位图
-curl -L "https://kiro.dev/favicon.ico" \
-    -o /tmp/kiro.ico 2>/dev/null && \
-    convert /tmp/kiro.ico -resize 128x128 \
-    ./AppDir/usr/share/icons/hicolor/128x128/apps/kiro-cli.png || \
-    convert -size 128x128 xc:#232f3e \
-    ./AppDir/usr/share/icons/hicolor/128x128/apps/kiro-cli.png
+# 内嵌最小合法 PNG，不依赖任何工具
+echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' \
+    | base64 -d > ./AppDir/usr/share/icons/hicolor/128x128/apps/kiro-cli.png
 
 export ICON=./AppDir/usr/share/icons/hicolor/128x128/apps/kiro-cli.png
 
