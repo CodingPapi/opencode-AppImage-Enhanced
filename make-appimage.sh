@@ -9,6 +9,8 @@ export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}
 
 # opencode-bin 是纯 CLI，没有图标和桌面文件，需要手动创建
 mkdir -p ./AppDir/usr/share/icons/hicolor/128x128/apps
+curl -L "https://raw.githubusercontent.com/sst/opencode/main/packages/opencode/assets/icon.png" \
+    -o ./AppDir/usr/share/icons/hicolor/128x128/apps/opencode.png
 mkdir -p ./AppDir/usr/share/applications
 
 # 创建一个最简桌面文件
