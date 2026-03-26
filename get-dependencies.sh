@@ -12,6 +12,9 @@ make-aur-package openspec
 # 用 pkg 编译成单文件二进制
 npm install -g @yao-pkg/pkg
 ENTRY=$(pacman -Ql openspec | grep 'dist/cli/index.js' | grep -v '\.map' | awk '{print $2}' | tr -d '\n')
-# 先确认 openspec 用的 node 版本
-NODE_VER=$(node --version | cut -d'v' -f2 | cut -d'.' -f1)
-pkg "$ENTRY" --targets "node${NODE_VER}-linux-${ARCH}" --output /usr/bin/openspec-standalone
+case "$ARCH" in
+    x86_64) PKG_ARCH="x64" ;;
+    aarch64) PKG_ARCH="arm64" ;;
+    *) PKG_ARCH="x64" ;;
+esac
+pkg "$ENTRY" --targets "node20-linux-${PKG_ARCH}" --output /usr/bin/openspec-standalone
