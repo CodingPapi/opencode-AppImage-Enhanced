@@ -1,41 +1,49 @@
 #!/bin/sh
-
 set -eu
-
 ARCH=$(uname -m)
-VERSION=$(pacman -Q opencode-desktop-bin | awk '{print $2; exit}') # example command to get version of application here
+VERSION=$(pacman -Q opencode-bin | awk '{print $2; exit}')  # 改包名
 export ARCH VERSION
 export OUTPATH=./dist
 export ADD_HOOKS="self-updater.bg.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
-export ICON=/usr/share/icons/hicolor/128x128/apps/OpenCode.png
-export DESKTOP=/usr/share/applications/OpenCode.desktop
+
+# opencode-bin 是纯 CLI，没有图标和桌面文件，需要手动创建
+mkdir -p ./AppDir/usr/share/icons/hicolor/128x128/apps
+mkdir -p ./AppDir/usr/share/applications
+
+# 创建一个最简桌面文件
+cat <<EOF > ./AppDir/usr/share/applications/opencode.desktop
+[Desktop Entry]
+Name=opencode
+Exec=opencode
+Icon=opencode
+Type=Application
+Categories=Development;
+EOF
+
+# 用一个占位图标（如果有真实图标路径就替换）
+export ICON=./AppDir/usr/share/icons/hicolor/128x128/apps/opencode.png
+export DESKTOP=./AppDir/usr/share/applications/opencode.desktop
+
 export DEPLOY_OPENGL=1
 export DEPLOY_P11KIT=1
 
-# Deploy dependencies
+# 只部署 CLI 二进制
 quick-sharun \
-	/usr/bin/OpenCode \
-	/usr/bin/opencode-cli
+    /usr/bin/opencode
 
-# bun makes binaries that self extract and read /proc/self/exe
-# they are also very delicate and get broken by strip
+# bun 二进制处理
 kek=.$(tr -dc 'A-Za-z0-9_=-' < /dev/urandom | head -c 10)
-rm -f ./AppDir/bin/opencode-cli         ./AppDir/shared/bin/opencode-cli
-cp -v /usr/bin/opencode-cli             ./AppDir/bin/opencode-cli
-patchelf --set-interpreter /tmp/"$kek"  ./AppDir/bin/opencode-cli
-patchelf --set-rpath '$ORIGIN/../lib'   ./AppDir/bin/opencode-cli
+rm -f ./AppDir/bin/opencode ./AppDir/shared/bin/opencode
+cp -v /usr/bin/opencode ./AppDir/bin/opencode
+patchelf --set-interpreter /tmp/"$kek" ./AppDir/bin/opencode
+patchelf --set-rpath '$ORIGIN/../lib' ./AppDir/bin/opencode
 
 cat <<EOF > ./AppDir/bin/random-linker.src.hook
 #!/bin/sh
 cp -f "\$APPDIR"/shared/lib/ld-linux*.so* /tmp/"$kek"
 EOF
 chmod +x ./AppDir/bin/*.hook
-
-# for weird reasons opencode now attempts to execute $(basename $APPIMAGE)/opencode-cli
-# this makes absolutely no sense wtf, so we have to set the APPIMAGE var to the
-# opencode binary inside the AppDir so that it resolves correctly
-echo 'APPIMAGE=${SHARUN_DIR}/bin/opencode' >> ./AppDir/.env
 
 # Turn AppDir into AppImage
 quick-sharun --make-appimage
